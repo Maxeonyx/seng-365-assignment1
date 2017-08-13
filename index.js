@@ -21,8 +21,6 @@ db.initialise().then(() => {
 	});
 
 })
-
-//todo (this catch doesnt catch all the errors)
 .catch((err) => {
 	console.log(err);
 	console.log("Failed to start server.")
