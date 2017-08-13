@@ -1,10 +1,19 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "seng365-2017-mgc70",
+  "version": "0.1.0",
+  "description": "Seng365 Assignment 1, Maxwell Clarke, University of Canterbury, 2017",
+  "main": "index.js",
   "scripts": {
-    "start": "node test.js"
+    "start": "nodejs index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@eng-git.canterbury.ac.nz:seng365-2017/mgc70"
+  },
+  "author": "maxeonyx",
+  "license": "ISC",
   "dependencies": {
-    "mysql": "^2.13.0"
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4"
   }
 }
