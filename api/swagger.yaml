@@ -1,0 +1,762 @@
+---
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.1.0"
+  title: "Crowdfunding API for SENG365"
+basePath: "/api/v1"
+tags:
+- name: "projects"
+  description: "All project-related endpoints"
+- name: "rewards"
+  description: "Project rewards"
+- name: "users"
+  description: "Project creators, and backers"
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /projects:
+    get:
+      tags:
+      - "projects"
+      summary: "View all current projects"
+      operationId: "get_projects"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "startIndex"
+        in: "query"
+        description: "Number of items to skip defore returing result"
+        required: false
+        type: "integer"
+      - name: "count"
+        in: "query"
+        description: "Number of items to return"
+        required: false
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/inline_response_200"
+      x-swagger-router-controller: "Projects"
+    post:
+      tags:
+      - "projects"
+      summary: "Create project"
+      operationId: "post_projects"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body"
+      responses:
+        201:
+          description: "OK"
+          schema:
+            type: "integer"
+            description: "Project Id"
+        400:
+          description: "Malformed project data"
+        401:
+          description: "Unauthorized - create account to create project"
+      security:
+      - User: []
+      x-swagger-router-controller: "Projects"
+  /projects/{id}:
+    get:
+      tags:
+      - "projects"
+      summary: "View project details"
+      operationId: "get_projects__id_"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id of the project to view"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/inline_response_200_1"
+      x-swagger-router-controller: "Projects"
+    put:
+      tags:
+      - "projects"
+      summary: "Update project (open/close)"
+      operationId: "put_projects__id_"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id of the project to update"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "open"
+        required: true
+        schema:
+          $ref: "#/definitions/open"
+      responses:
+        201:
+          description: "OK"
+        400:
+          description: "Malformed request"
+        401:
+          description: "Unauthorized - create account to update project"
+        403:
+          description: "Forbidden - unable to update a project you do not own"
+      security:
+      - User: []
+      x-swagger-router-controller: "Projects"
+  /projects/{id}/rewards:
+    get:
+      tags:
+      - "rewards"
+      summary: "View project rewards"
+      operationId: "get_projects__id__rewards"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Project id"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/projects_rewards"
+      x-swagger-router-controller: "Rewards"
+    put:
+      tags:
+      - "rewards"
+      summary: "Update project rewards"
+      operationId: "put_projects__id__rewards"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id of the project to update"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "rewards"
+        description: "Array of project rewards"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/projects_rewards"
+      responses:
+        201:
+          description: "OK"
+        400:
+          description: "Malformed request"
+        401:
+          description: "Unauthorized - create account to update project"
+        403:
+          description: "Forbidden - unable to update a project you do not own"
+      security:
+      - User: []
+      x-swagger-router-controller: "Rewards"
+  /projects/{id}/image:
+    get:
+      tags:
+      - "projects"
+      summary: "View project image"
+      operationId: "get_projects__id__image"
+      consumes:
+      - "application/json"
+      produces:
+      - "image/png"
+      - "image/jpeg"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id of the image"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "file"
+      x-swagger-router-controller: "Projects"
+    put:
+      tags:
+      - "projects"
+      summary: "Update project image"
+      operationId: "put_projects__id__image"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id of the project to update"
+        required: true
+        type: "integer"
+      - name: "image"
+        in: "formData"
+        description: "The image to upload"
+        required: false
+        type: "file"
+        format: "file"
+      responses:
+        201:
+          description: "OK"
+        400:
+          description: "Malformed request"
+        401:
+          description: "Unauthorized - create account to update project"
+        403:
+          description: "Forbidden - unable to update a project you do not own"
+      security:
+      - User: []
+      x-swagger-router-controller: "Projects"
+  /projects/{id}/pledge:
+    post:
+      tags:
+      - "projects"
+      summary: "Pledge an amount to a project"
+      operationId: "post_projects__id__pledge"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id of the project"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_1"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "bad user, project, or pledge details"
+        401:
+          description: "Unauthorized - create account to pledge to a project"
+        403:
+          description: "Forbidden - cannot pledge to own project - this is fraud!"
+      security:
+      - User: []
+      x-swagger-router-controller: "Projects"
+  /users:
+    post:
+      tags:
+      - "users"
+      summary: "Create user"
+      operationId: "createUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User details"
+        required: true
+        schema:
+          $ref: "#/definitions/body_2"
+      responses:
+        201:
+          description: "OK"
+          schema:
+            type: "integer"
+            description: "Id of the created user"
+      x-swagger-router-controller: "Users"
+  /users/login:
+    post:
+      tags:
+      - "users"
+      summary: "Logs user into the system"
+      operationId: "usersLoginPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/inline_response_200_2"
+        400:
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Users"
+  /users/logout:
+    post:
+      tags:
+      - "users"
+      summary: "Logs out current logged in user session"
+      description: ""
+      operationId: "usersLogoutPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+        401:
+          description: "Unauthorized - already logged out"
+      security:
+      - User: []
+      x-swagger-router-controller: "Users"
+  /users/{id}:
+    get:
+      tags:
+      - "users"
+      summary: "Get user by user id"
+      description: ""
+      operationId: "usersIdGET"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/users_user"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "User not found"
+      x-swagger-router-controller: "Users"
+    put:
+      tags:
+      - "users"
+      summary: "Update user"
+      description: "This can only be done by the logged in user."
+      operationId: "usersIdPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "user id that needs to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/body_3"
+      responses:
+        401:
+          description: "Unauthorized - not logged in"
+        403:
+          description: "Forbidden - account not owned"
+        404:
+          description: "User not found"
+      security:
+      - User: []
+      x-swagger-router-controller: "Users"
+    delete:
+      tags:
+      - "users"
+      summary: "Delete user"
+      description: "This can only be done by the logged in user."
+      operationId: "usersIdDELETE"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The id that needs to be deleted"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "User deleted"
+        401:
+          description: "Unauthorized - not logged in"
+        403:
+          description: "Forbidden - account not owned"
+        404:
+          description: "User not found"
+      security:
+      - User: []
+      x-swagger-router-controller: "Users"
+securityDefinitions:
+  User:
+    type: "apiKey"
+    name: "X-Authorization"
+    in: "header"
+definitions:
+  ProjectOverview:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      title:
+        type: "string"
+      subtitle:
+        type: "string"
+      imageUri:
+        type: "string"
+    description: "Used for the GET - projects/ endpoint. This contains a subset of\
+      \ the project data."
+  ProjectDetails:
+    type: "object"
+    properties:
+      project:
+        $ref: "#/definitions/inline_response_200_1_project"
+      progress:
+        $ref: "#/definitions/inline_response_200_1_progress"
+      backers:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_1_backers"
+    description: "object containing project with dynamic content (backers, progress,\
+      \ rewards)"
+  Project:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      creationDate:
+        type: "integer"
+      data:
+        $ref: "#/definitions/inline_response_200_1_project_data"
+    description: "object containing project, and generated data (creation date, id)"
+  ProjectData:
+    type: "object"
+    required:
+    - "creators"
+    - "description"
+    - "subtitle"
+    - "target"
+    - "title"
+    properties:
+      title:
+        type: "string"
+      subtitle:
+        type: "string"
+      description:
+        type: "string"
+      imageUri:
+        type: "string"
+      target:
+        type: "integer"
+        description: "target amount in cents"
+      creators:
+        type: "array"
+        items:
+          $ref: "#/definitions/projects_creators"
+      rewards:
+        type: "array"
+        items:
+          $ref: "#/definitions/projects_rewards"
+    description: "object containing raw project data."
+  Progress:
+    type: "object"
+    properties:
+      target:
+        type: "integer"
+      currentPledged:
+        type: "integer"
+      numberOfBackers:
+        type: "integer"
+    description: "assumptions - we are only dealing with a single currency, money\
+      \ can be represented in cents"
+  Reward:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "id of the reward"
+      amount:
+        type: "integer"
+        description: "reward amount in cents"
+      description:
+        type: "string"
+        description: "reward description"
+    description: "a project reward"
+  Pledge:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "id of the backer"
+      amount:
+        type: "integer"
+        description: "pledge amount in cents"
+      anonymous:
+        type: "boolean"
+        description: "hide the username"
+      card:
+        $ref: "#/definitions/projectsidpledge_card"
+  CreditCard:
+    type: "object"
+    properties:
+      authToken:
+        type: "string"
+        description: "token"
+  User:
+    type: "object"
+    properties:
+      user:
+        $ref: "#/definitions/users_user"
+      password:
+        type: "string"
+  PublicUser:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      username:
+        type: "string"
+      location:
+        type: "string"
+      email:
+        type: "string"
+  LogInResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "the id of the logged in user"
+      token:
+        type: "string"
+        description: "a token to be used for future calls"
+  inline_response_200:
+    properties:
+      id:
+        type: "integer"
+      title:
+        type: "string"
+      subtitle:
+        type: "string"
+      imageUri:
+        type: "string"
+    description: "Used for the GET - projects/ endpoint. This contains a subset of\
+      \ the project data."
+  projects_creators:
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+  projects_rewards:
+    properties:
+      id:
+        type: "integer"
+        description: "id of the reward"
+      amount:
+        type: "integer"
+        description: "reward amount in cents"
+      description:
+        type: "string"
+        description: "reward description"
+    description: "a project reward"
+  body:
+    type: "object"
+    required:
+    - "creators"
+    - "description"
+    - "subtitle"
+    - "target"
+    - "title"
+    properties:
+      title:
+        type: "string"
+      subtitle:
+        type: "string"
+      description:
+        type: "string"
+      imageUri:
+        type: "string"
+      target:
+        type: "integer"
+        description: "target amount in cents"
+      creators:
+        type: "array"
+        items:
+          $ref: "#/definitions/projects_creators"
+      rewards:
+        type: "array"
+        items:
+          $ref: "#/definitions/projects_rewards"
+    description: "object containing raw project data."
+  inline_response_200_1_project_data:
+    required:
+    - "creators"
+    - "description"
+    - "subtitle"
+    - "target"
+    - "title"
+    properties:
+      title:
+        type: "string"
+      subtitle:
+        type: "string"
+      description:
+        type: "string"
+      imageUri:
+        type: "string"
+      target:
+        type: "integer"
+        description: "target amount in cents"
+      creators:
+        type: "array"
+        items:
+          $ref: "#/definitions/projects_creators"
+      rewards:
+        type: "array"
+        items:
+          $ref: "#/definitions/projects_rewards"
+    description: "object containing raw project data."
+  inline_response_200_1_project:
+    properties:
+      id:
+        type: "integer"
+      creationDate:
+        type: "integer"
+      data:
+        $ref: "#/definitions/inline_response_200_1_project_data"
+    description: "object containing project, and generated data (creation date, id)"
+  inline_response_200_1_progress:
+    properties:
+      target:
+        type: "integer"
+      currentPledged:
+        type: "integer"
+      numberOfBackers:
+        type: "integer"
+    description: "assumptions - we are only dealing with a single currency, money\
+      \ can be represented in cents"
+  inline_response_200_1_backers:
+    properties:
+      name:
+        type: "integer"
+      amount:
+        type: "integer"
+  inline_response_200_1:
+    properties:
+      project:
+        $ref: "#/definitions/inline_response_200_1_project"
+      progress:
+        $ref: "#/definitions/inline_response_200_1_progress"
+      backers:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_1_backers"
+    description: "object containing project with dynamic content (backers, progress,\
+      \ rewards)"
+  open:
+    type: "object"
+    properties:
+      open:
+        type: "boolean"
+        description: "Whether the project should be open"
+  projectsidpledge_card:
+    properties:
+      authToken:
+        type: "string"
+        description: "token"
+  body_1:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "id of the backer"
+      amount:
+        type: "integer"
+        description: "pledge amount in cents"
+      anonymous:
+        type: "boolean"
+        description: "hide the username"
+      card:
+        $ref: "#/definitions/projectsidpledge_card"
+  users_user:
+    properties:
+      id:
+        type: "integer"
+      username:
+        type: "string"
+      location:
+        type: "string"
+      email:
+        type: "string"
+  body_2:
+    type: "object"
+    properties:
+      user:
+        $ref: "#/definitions/users_user"
+      password:
+        type: "string"
+  inline_response_200_2:
+    properties:
+      id:
+        type: "integer"
+        description: "the id of the logged in user"
+      token:
+        type: "string"
+        description: "a token to be used for future calls"
+  body_3:
+    type: "object"
+    properties:
+      user:
+        $ref: "#/definitions/users_user"
+      password:
+        type: "string"
