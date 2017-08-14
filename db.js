@@ -101,7 +101,6 @@ const queries = {
 		.catch(rollback);
 	},
 	createSession (userId) {
-		console.log(userId);
 		let token = crypto.randomBytes(69).toString('hex');
 		return query(
 			`INSERT INTO session (user_id, token) VALUES ?
@@ -156,7 +155,6 @@ const queries = {
 			`DELETE FROM session WHERE token = ?`,
 			[token]
 		).then((result) => {
-			console.log(result);
 			if (result.rows.affectedRows === 1) {
 				result.success = true;
 			} else {

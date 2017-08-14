@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
 
 });
 
-function auth (req, res, next) {
+const auth = function (req, res, next) {
 
 	const token = req.get('X-Authorization');
 
@@ -31,17 +31,18 @@ function auth (req, res, next) {
 };
 
 router.post('/', (req, res, next) => {
-	const data = req.body;
+    const data = req.body;
 
-	if (!data.user || !data.password) {
-		return res.status(400).send("Must include username, email and password.");
-	}
-
-	if (validate('password', data.password).error)
+    if (!data.user || !data.password) {
+        return res.status(400).send("Must include username, email and password.");
+    }
+    if (validate(validate.schema.password, data.password).error) {
         return res.status(400).send("Malformed password.");
-
-	if (validate('user', data.user).error)
-		return res.status(400).send("Malformed details, check username and email are valid.");
+	}
+	if (validate(validate.schema.user, data.user).error) {
+        console.log(validate(validate.schema.user, data.user).error);
+        return res.status(400).send("Malformed details, check username and email are valid.");
+    }
 
 	db.queries.createUser(data.user, data.password)
 	.then((userId) => {
