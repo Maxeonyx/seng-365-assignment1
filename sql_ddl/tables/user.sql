@@ -1,6 +1,6 @@
 create table if not exists user (
-	id int primary key auto_increment,
-	username text not null,
+	user_id int primary key auto_increment,
+	username varchar(200) not null unique,
 	email text not null,
 	location text
 );

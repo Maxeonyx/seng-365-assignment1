@@ -1,18 +1,19 @@
 const mysql = require('mysql');
 const joi = require('joi');
 
-const schemas = {
+const schema = {
 	user: {
 		id: joi.number().integer(),
 		username: joi.string().regex(/^[a-zA-Z0-9_]{3,30}$/).required(),
 		location: joi.string(),
-		email: joi.string().email()
-	}
+		email: joi.string().email().required()
+	},
+	password: joi.string().min(6),
+	token: joi.string().regex(/^[0-9a-fA-F]{138}$/)
 };
 
-module.exports = {
-
-	user: (obj) => {
-		return joi.validate(obj, schemas.user);
-	}
+module.exports = (schema, obj) => {
+		return joi.validate(obj, schema);
 };
+
+module.exports.schema = schema;
