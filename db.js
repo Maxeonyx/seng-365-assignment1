@@ -89,13 +89,13 @@ const queries = {
 			[[[user.username, user.location, user.email]]]
 		))
 		.then(() => query('SELECT last_insert_id()'))
-		.then((result) => {
-			let last_id = result.rows[0]['last_insert_id()'];
+		.then((result) => result.rows[0]['last_insert_id()'])
+		.then((user_id) => {
 			return query(
 				'INSERT INTO password (user_id, password) VALUES ?',
-				[[[last_id, password]]]
+				[[[user_id, password]]]
 			)
-			.then(() => last_id);
+			.then(() => user_id);
 		})
 		.then(commit)
 		.catch(rollback);
@@ -162,6 +162,47 @@ const queries = {
 			}
 			return result;
 		});
+	},
+	createProject (project) {
+		return begin()
+			.then(() => query(
+				`INSERT INTO project (
+					title,
+					subtitle,
+					description,
+					imageUri,
+					target
+				) VALUES ?`,
+				[[[
+					project.title,
+					project.subtitle,
+					project.description,
+					project.imageUri,
+					project.target
+				]]]
+			))
+			.then(() => query('SELECT last_insert_id()'))
+			.then((result) => result.rows[0]['last_insert_id()'])
+			.then((project_id) => {
+				return query(
+					`INSERT INTO creator (project_id, user_id, name) VALUES ?`,
+					project.creators.map((creator) => {
+						return [project_id, creator.user_id, creator.name];
+					})
+				})
+				.then(() => project_id);
+			})
+			.then((project_id) => {
+				return query(
+					`INSERT INTO reward (project_id, amount, description) VALUES ?`,
+					project.rewards.map((reward) => {
+						return [project_id, reward.amount, reward.description];
+					})
+				})
+				.then(() => project_id);
+			})
+			.then(commit)
+			.catch(rollback);
 	}
 };
 
