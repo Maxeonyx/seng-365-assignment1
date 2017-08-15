@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const validate = require('../validator.js');
+const validate = require('../validate.js')
 
 router.post('/echo', (req, res, next) => {
 

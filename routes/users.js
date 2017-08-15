@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const validate = require('../validator.js');
+const validate = require('../validate.js');
 const db = require('../db.js');
 
 router.get('/', (req, res, next) => {
