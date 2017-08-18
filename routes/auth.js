@@ -1,7 +1,7 @@
 const db = require('../db.js');
 const validate = require('../validate.js');
 
-module.exports = function (req, res, next) {
+const auth = function (req, res, next) {
 
 	const token = req.get('X-Authorization');
 
@@ -13,6 +13,9 @@ module.exports = function (req, res, next) {
 			if (!result.success) {
 				return res.status(401).send("Unauthorized");
 			}
+			req.auth = {
+				id: result.userId
+			};
 			return next();
 		}).catch((err) => {
 			console.log(err);

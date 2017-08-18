@@ -10,7 +10,7 @@ const connect = (database) => {
 	return new Promise((resolve, reject) => {
         connection = mysql.createConnection({
             port: process.env.SENG365_MYSQL_PORT || 6033,
-            host: process.env.SENG365_MYSQL_PORT || "localhost",
+            host: process.env.SENG365_MYSQL_HOST || "localhost",
             user: "root",
             password: "secret",
             database: database
@@ -27,8 +27,8 @@ const queryFile = (file) => {
 
 		fs.readFile('sql_ddl/' + file, 'utf8', (err, file_contents) => {
 			if (err) return reject(new Error("Could not read file"));
-            console.log("Running query " + file);
-            resolve(file_contents);
+			console.log("Running query " + file);
+			resolve(file_contents);
 		});
 	}).then((file_contents) => query(file_contents));
 };
@@ -100,6 +100,49 @@ const queries = {
 		.then(commit)
 		.catch(rollback);
 	},
+	getUser (userId) {
+		return query(
+			`SELECT
+				user_id, username, email, location
+			FROM user
+			WHERE user_id = ?`,
+			[userId]
+		).then((result) => {
+			if (result.rows.length === 1) {
+				let record = result.rows[0];
+				return { 
+					user_id: record.user_id,
+					username: record.username,
+					email: record.email,
+					location: record.location
+				};
+			} else {
+				return null;
+			}
+		});
+	},
+	updateUserAndPassword (userId, user, password) {
+		return query(
+			`UPDATE user u
+			INNER JOIN password p ON u.user_id = p.user_id
+			SET 
+				u.username = COALESCE(?, u.username),
+				u.email = COALESCE(?, u.email),
+				u.location = COALESCE(?, u.location),
+				p.password = COALESCE(?, p.password)
+			WHERE u.user_id = ?`,
+			[user.username, user.email, user.location, password, userId]
+		).then((result) => {
+			let affect = result.rows.affectedRows;
+			return affect > 0 && affect <= 2;
+		});
+	},
+	deleteUser (userId) {
+		return query(
+			`DELETE FROM user WHERE user_id = ?`,
+			[userId]
+		).then((result) => result.rows.affectedRows == 1);
+	},
 	createSession (userId) {
 		let token = crypto.randomBytes(69).toString('hex');
 		return query(
@@ -147,7 +190,7 @@ const queries = {
 			} else {
 				result.success = false;
 			}
-			return result
+			return result;
 		});
 	},
 	logout (token) {
