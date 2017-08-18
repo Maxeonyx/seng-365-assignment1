@@ -121,23 +121,21 @@ const queries = {
 			}
 		});
 	},
-	updateUser (userId, user) {
+	updateUserAndPassword (userId, user, password) {
 		return query(
-			`UPDATE user SET 
-				username = COALESCE(?, username),
-				email = COALESCE(?, email),
-				location = COALESCE(?, location)
-			WHERE user_id = ?`,
-			[user.username, user.email, user.location, userId]
-		).then((result) => result.rows.affectedRows == 1);
-	},
-	updatePassword (userId, password) {
-		return query(
-			`UPDATE password SET 
-				password = COALESCE(?, password)
-			WHERE user_id = ?`,
-			[password, userId]
-		).then((result) => result.rows.affectedRows == 1);
+			`UPDATE user u
+			INNER JOIN password p ON u.user_id = p.user_id
+			SET 
+				u.username = COALESCE(?, u.username),
+				u.email = COALESCE(?, u.email),
+				u.location = COALESCE(?, u.location),
+				p.password = COALESCE(?, p.password)
+			WHERE u.user_id = ?`,
+			[user.username, user.email, user.location, password, userId]
+		).then((result) => {
+			let affect = result.rows.affectedRows;
+			return affect > 0 && affect <= 2;
+		});
 	},
 	deleteUser (userId) {
 		return query(

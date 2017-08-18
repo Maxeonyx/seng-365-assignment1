@@ -92,7 +92,7 @@ router.put('/:id', auth, (req, res, next) => {
 		return res.status(400).send("Malformed details.");
 	}
 
-	db.queries.updateUser(id, data.user)
+	db.queries.updateUserAndPassword(id, data.user, data.password)
 	.then((success) => {
 		if (success === false) {
 			return res.status(404).send("User not found.");
