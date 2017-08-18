@@ -210,6 +210,56 @@ const queries = {
 			return result;
 		});
 	},
+	createBacker (projectId, backer) {
+		return query(
+			`INSERT INTO backer (
+				project_id,
+				pledge,
+				user_id,
+				is_anonymous
+			) VALUES ?`,
+			[[[
+				projectId,
+				backer.pledge,
+				backer.user_id,
+				backer.is_anonymous
+			]]]
+		)
+		.then(() => query('SELECT last_insert_id()'))
+		.then((result) => result.rows[0]['last_insert_id()']);
+	},
+	createCreator (projectId, creator) {
+		return query(
+			`INSERT INTO creator (
+				project_id,
+				user_id,
+				name
+			) VALUES ?`,
+			[[[
+				projectId,
+				creator.user_id,
+				creator.name
+			]]]
+		)
+		.then(() => query('SELECT last_insert_id()'))
+		.then((result) => result.rows[0]['last_insert_id()']);
+	},
+	createReward (projectId, reward) {
+		return query(
+			`INSERT INTO reward (
+				project_id,
+				amount,
+				description
+			) VALUES ?`,
+			[[[
+				projectId,
+				reward.amount,
+				reward.description
+			]]]
+		)
+		.then(() => query('SELECT last_insert_id()'))
+		.then((result) => result.rows[0]['last_insert_id()']);
+	},
 	createProject (project) {
 		return begin()
 			.then(() => query(
