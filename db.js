@@ -232,8 +232,7 @@ const queries = {
 					project.creators.map((creator) => {
 						return [project_id, creator.user_id, creator.name];
 					})
-				})
-				.then(() => project_id);
+				).then(() => project_id);
 			})
 			.then((project_id) => {
 				return query(
@@ -241,8 +240,7 @@ const queries = {
 					project.rewards.map((reward) => {
 						return [project_id, reward.amount, reward.description];
 					})
-				})
-				.then(() => project_id);
+				).then(() => project_id);
 			})
 			.then(commit)
 			.catch(rollback);

@@ -1,7 +1,7 @@
 const db = require('../db.js');
 const validate = require('../validate.js');
 
-const auth = function (req, res, next) {
+module.exports = function (req, res, next) {
 
 	const token = req.get('X-Authorization');
 
