@@ -4,6 +4,10 @@ create table if not exists backer (
 	pledge double precision not null,
 	user_id int,
 	is_anonymous boolean,
-	foreign key (project_id) references project(project_id),
-	foreign key (user_id) references user(user_id)
+	foreign key (project_id)
+		references project(project_id)
+		on delete cascade,
+	foreign key (user_id)
+		references user(user_id)
+		on delete cascade
 );

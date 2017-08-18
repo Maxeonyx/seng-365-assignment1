@@ -3,6 +3,10 @@ create table if not exists creator (
 	project_id int not null,
 	user_id int not null,
 	name text,
-	foreign key (project_id) references project(project_id),
-	foreign key (user_id) references user(user_id)
+	foreign key (project_id)
+		references project(project_id)
+		on delete cascade,
+	foreign key (user_id)
+		references user(user_id)
+		on delete cascade
 );

@@ -52,6 +52,10 @@ const initialise = () => {
 		.then(() => queryFile('tables/user.sql'))
 		.then(() => queryFile('tables/password.sql'))
 		.then(() => queryFile('tables/session.sql'))
+		.then(() => queryFile('tables/project.sql'))
+		.then(() => queryFile('tables/creator.sql'))
+		.then(() => queryFile('tables/backer.sql'))
+		.then(() => queryFile('tables/reward.sql'))
 		.then(() => console.log("DB Initialised!"));
 
 };
