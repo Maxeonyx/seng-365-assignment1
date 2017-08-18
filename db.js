@@ -233,17 +233,17 @@ const queries = {
 			.then((project_id) => {
 				return query(
 					`INSERT INTO creator (project_id, user_id, name) VALUES ?`,
-					project.creators.map((creator) => {
-						return [project_id, creator.user_id, creator.name];
-					})
+					[project.creators.map((creator) => {
+						return [project_id, creator.id, creator.name];
+					})]
 				).then(() => project_id);
 			})
 			.then((project_id) => {
 				return query(
 					`INSERT INTO reward (project_id, amount, description) VALUES ?`,
-					project.rewards.map((reward) => {
+					[project.rewards.map((reward) => {
 						return [project_id, reward.amount, reward.description];
-					})
+					})]
 				).then(() => project_id);
 			})
 			.then(commit)
