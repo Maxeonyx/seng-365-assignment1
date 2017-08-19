@@ -214,15 +214,15 @@ const queries = {
 		return query(
 			`INSERT INTO backer (
 				project_id,
-				pledge,
 				user_id,
-				is_anonymous
+				pledge,
+				anonymous
 			) VALUES ?`,
 			[[[
 				projectId,
-				backer.pledge,
 				backer.user_id,
-				backer.is_anonymous
+				backer.pledge,
+				backer.anonymous
 			]]]
 		)
 		.then(() => query('SELECT last_insert_id()'))
