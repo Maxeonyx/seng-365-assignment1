@@ -10,7 +10,7 @@ stages:
 clean:
   stage: clean
   script:
-  - docker network prune
+  - docker network prune -f
 
 build:
   stage: build
