@@ -3,6 +3,6 @@ services:
   app:
     build: .
   mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile-MYSQL
+    image: "mysql:5.7"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
