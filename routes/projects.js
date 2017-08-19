@@ -50,7 +50,7 @@ router.get('/:id', (req, res, next) => {
 	let projectId = req.params.id;
 
 	if (validate(validate.schema.id, projectId).error) {
-		return res.status(400).send("Invalid query params");
+		return res.status(400).send("Invalid project id");
 	}
 	
 	projectId = parseInt(projectId);
@@ -74,7 +74,7 @@ router.post('/:id/pledge', auth, (req, res, next) => {
 
 	let projectId = req.params.id;
 	if (validate(validate.schema.id, projectId).error) {
-		return res.status(400).send("Invalid query params");
+		return res.status(400).send("Invalid project id");
 	}
 	projectId = parseInt(projectId);
 
@@ -87,6 +87,24 @@ router.post('/:id/pledge', auth, (req, res, next) => {
 	db.queries.createBacker(projectId, backer)
 	.then((backerId) => {
 		res.status(201).send("OK");
+	}).catch((err) => {
+		console.log(err);
+		res.status(500).send("Internal Server Error");
+	});
+});
+
+router.get('/:id/rewards', (req, res, next) => {
+
+	let projectId = req.params.id;
+
+	if (validate(validate.schema.id, projectId).error) {
+		return res.status(400).send("Invalid project id");
+	}
+	projectId = parseInt(projectId);
+
+	db.queries.getRewards(projectId)
+	.then((rewards) => {
+		res.status(201).send(rewards);
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send("Internal Server Error");
