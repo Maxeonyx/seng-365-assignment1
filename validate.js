@@ -31,6 +31,13 @@ const sc = {
 	pagination: {
 		startIndex: joi.number().integer().min(0),
 		count: joi.number().integer().min(1)
+	},
+	pledge: {
+		amount: joi.number().min(0).precision(4).required(),
+		anonymous: joi.boolean(),
+		card: {
+			authToken: joi.string().required()
+		}
 	}
 };
 
@@ -67,4 +74,5 @@ module.exports.schema = {
 		imageUri: sc.project.imageUri
 	},
 	getProject: sc.pagination,
+	createPledge: sc.pledge
 };

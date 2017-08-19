@@ -64,4 +64,34 @@ router.get('/:id', (req, res, next) => {
 	});
 });
 
+router.post('/:id/pledge', auth, (req, res, next) => {
+
+	const data = req.body;
+
+	if (validate(validate.schema.createPledge, data).error) {
+		return res.status(400).send("Malformed details, check all fields are valid");
+	}
+
+	let projectId = req.params.id;
+	if (validate(validate.schema.id, projectId).error) {
+		return res.status(400).send("Invalid query params");
+	}
+	projectId = parseInt(projectId);
+
+	let backer = {
+		userId: req.auth.id,
+		pledge: data.amount,
+		anonymous: data.anonymous || false
+	};
+
+	db.queries.createBacker(projectId, backer)
+	.then((backerId) => {
+		res.status(201).send("OK");
+	}).catch((err) => {
+		console.log(err);
+		res.status(500).send("Internal Server Error");
+	});
+});
+
+
 module.exports = router;
