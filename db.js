@@ -316,6 +316,27 @@ const queries = {
 			description: row.description
 		})));
 	},
+	updateRewards (projectId, rewards) {
+		return begin()
+			.then(() => query(
+				`DELETE FROM reward
+				WHERE project_id = ?`,
+				[projectId]
+			)).then(() => query(
+				`INSERT INTO reward (
+					project_id,
+					amount,
+					description
+				) VALUES ?`,
+				[rewards.map((reward) => [
+					projectId,
+					reward.amount,
+					reward.description
+				])]
+			))
+			.then(commit)
+			.catch(rollback);
+	},
 	createProject (project) {
 		return begin()
 			.then(() => query(
@@ -339,17 +360,21 @@ const queries = {
 			.then((project_id) => {
 				return query(
 					`INSERT INTO creator (project_id, user_id, name) VALUES ?`,
-					[project.creators.map((creator) => {
-						return [project_id, creator.id, creator.name];
-					})]
+					[project.creators.map((creator) => [
+						project_id,
+						creator.id,
+						creator.name
+					])]
 				).then(() => project_id);
 			})
 			.then((project_id) => {
 				return query(
 					`INSERT INTO reward (project_id, amount, description) VALUES ?`,
-					[project.rewards.map((reward) => {
-						return [project_id, reward.amount, reward.description];
-					})]
+					[project.rewards.map((reward) => [
+						project_id,
+						reward.amount,
+						reward.description
+					])]
 				).then(() => project_id);
 			})
 			.then(commit)

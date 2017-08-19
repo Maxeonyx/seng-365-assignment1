@@ -23,10 +23,9 @@ const sc = {
 			name: joi.string()
 		}).unique("id"),
 		rewards: joi.array().items({
-			id: joi.number().integer().min(0),
 			amount: joi.number().min(0).precision(4).required(),
 			description: joi.string().required()
-		}).unique("id"),
+		}),
 	},
 	pagination: {
 		startIndex: joi.number().integer().min(0),
@@ -74,5 +73,6 @@ module.exports.schema = {
 		imageUri: sc.project.imageUri
 	},
 	getProject: sc.pagination,
-	createPledge: sc.pledge
+	createPledge: sc.pledge,
+	updateRewards: sc.project.rewards
 };
