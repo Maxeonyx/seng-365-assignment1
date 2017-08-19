@@ -5,8 +5,12 @@ services:
     links:
       - mysql:mysql
     ports:
-      - "4850:4850"
+      - 4850:4850
   mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile-MYSQL
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: mgc70
+      MYSQL_PASSWORD: arou__nd11.5andround
+      MYSQL_DATABASE: mgc70
+
