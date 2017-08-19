@@ -5,7 +5,7 @@ const joi = require('joi');
 
 const sc = {
 	user: {
-		id: joi.number().integer().positive(),
+		id: joi.number().integer().min(0),
 		username: joi.string().regex(/^[-a-zA-Z0-9_]{3,200}$/),
 		email: joi.string().email(),
 		location: joi.string().allow(null)
@@ -17,14 +17,14 @@ const sc = {
 		subtitle: joi.string(),
 		description: joi.string(),
 		imageUri: joi.string().uri({scheme: ['http', 'https'], allowRelative: true}),
-		target: joi.number().positive().precision(4),
+		target: joi.number().min(0).precision(4),
 		creators: joi.array().min(1).items({
-			id: joi.number().integer().positive().required(),
+			id: joi.number().integer().min(0).required(),
 			name: joi.string()
 		}).unique("id"),
 		rewards: joi.array().items({
-			id: joi.number().integer().positive(),
-			amount: joi.number().positive().precision(4).required(),
+			id: joi.number().integer().min(0),
+			amount: joi.number().min(0).precision(4).required(),
 			description: joi.string().required()
 		}).unique("id"),
 	},
