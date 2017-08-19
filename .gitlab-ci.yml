@@ -3,8 +3,14 @@ cache:
   - node_modules/
 
 stages:
+  - clean
   - build
   - deploy
+
+clean:
+  stage: clean
+  script:
+  - docker network prune
 
 build:
   stage: build
