@@ -113,12 +113,12 @@ const queries = {
 			[userId]
 		).then((result) => {
 			if (result.rows.length === 1) {
-				let record = result.rows[0];
+				let row = result.rows[0];
 				return { 
-					user_id: record.user_id,
-					username: record.username,
-					email: record.email,
-					location: record.location
+					id: row.user_id,
+					username: row.username,
+					email: row.email,
+					location: row.location
 				};
 			} else {
 				return null;
@@ -220,13 +220,33 @@ const queries = {
 			) VALUES ?`,
 			[[[
 				projectId,
-				backer.user_id,
+				backer.userId,
 				backer.pledge,
 				backer.anonymous
 			]]]
 		)
 		.then(() => query('SELECT last_insert_id()'))
 		.then((result) => result.rows[0]['last_insert_id()']);
+	},
+	getBackers (projectId) {
+		return query(
+			`SELECT
+				backer_id,
+				project_id,
+				user_id,
+				pledge,
+				anonymous
+			FROM backer
+			WHERE project_id = ?
+			ORDER BY backer_id`,
+			[projectId]
+		).then((result) => result.rows.map((row) => ({
+			id: row.backer_id,
+			projectId: row.project_id,
+			userId: row.user_id,
+			pledge: row.pledge,
+			anonymous: row.anonymous
+		})));
 	},
 	createCreator (projectId, creator) {
 		return query(
@@ -237,12 +257,30 @@ const queries = {
 			) VALUES ?`,
 			[[[
 				projectId,
-				creator.user_id,
+				creator.userId,
 				creator.name
 			]]]
 		)
 		.then(() => query('SELECT last_insert_id()'))
 		.then((result) => result.rows[0]['last_insert_id()']);
+	},
+	getCreators (projectId) {
+		return query(
+			`SELECT
+				creator_id,
+				project_id,
+				user_id,
+				name
+			FROM creator
+			WHERE project_id = ?
+			ORDER BY creator_id`,
+			[projectId]
+		).then((result) => result.rows.map((row) => ({
+			id: row.creator_id,
+			projectId: row.project_id,
+			userId: row.user_id,
+			name: row.name
+		})));
 	},
 	createReward (projectId, reward) {
 		return query(
@@ -260,6 +298,24 @@ const queries = {
 		.then(() => query('SELECT last_insert_id()'))
 		.then((result) => result.rows[0]['last_insert_id()']);
 	},
+	getRewards (projectId) {
+		return query(
+			`SELECT
+				reward_id,
+				project_id,
+				amount,
+				description
+			FROM reward
+			WHERE project_id = ?
+			ORDER BY reward_id`,
+			[projectId]
+		).then((result) => result.rows.map((row) => ({
+			id: row.reward_id,
+			projectId: row.project_id,
+			amount: row.amount,
+			description: row.description
+		})));
+	},
 	createProject (project) {
 		return begin()
 			.then(() => query(
@@ -267,7 +323,7 @@ const queries = {
 					title,
 					subtitle,
 					description,
-					imageUri,
+					image_uri,
 					target
 				) VALUES ?`,
 				[[[
@@ -298,7 +354,91 @@ const queries = {
 			})
 			.then(commit)
 			.catch(rollback);
-	}
+	},
+	getProject (projectId) {
+		return query(
+			`SELECT
+				p.project_id,
+				title,
+				subtitle,
+				description,
+				image_uri,
+				target,
+				creation_date
+			FROM project p
+			WHERE project_id = ?`,
+			[projectId]
+		).then((result) => {
+			if (result.rows.length === 1) {
+				let row = result.rows[0];
+				return { 
+					id: row.project_id,
+					creationDate: row.creation_date,
+					data: {
+						title: row.title,
+						subtitle: row.subtitle,
+						description: row.description,
+						imageUri: row.image_uri,
+						target: row.target,
+						creators: null,
+						rewards: null
+					},
+					progress: {
+						target: row.target,
+						currentPledged: null,
+						numberOfBackers: null
+					}
+				};
+			} else {
+				return null;
+			}
+		}).then((project) => {
+			if (project === null) return null;
+			return this.getCreators(projectId)
+				.then((creators) => {
+					project.data.creators = creators;
+					return project;
+				});
+		}).then((project) => {
+			if (project === null) return null;
+			return this.getRewards(projectId)
+				.then((rewards) => {
+					project.data.rewards = rewards;
+					return project;
+				});
+		}).then((project) => {
+			if (project === null) return null;
+			return this.getBackers(projectId)
+				.then((backers) => {
+					project.backers = backers;
+					project.progress.currentPledged = backers.reduce((a, b) => {
+						return a.pledge + b.pledge;
+					}, 0);
+					project.progress.numberOfBackers = backers.length;
+					return project;
+				});
+		});
+	},
+	getProjects (startIndex, count) {
+		return query(
+			`SELECT
+				project_id,
+				title,
+				subtitle,
+				image_uri
+			FROM project
+			ORDER BY project_id
+			LIMIT ? OFFSET ?`,
+			[count, startIndex]
+		).then((result) => {
+			return result.rows.map((row) => ({ 
+				id: row.project_id,
+				title: row.title,
+				subtitle: row.subtitle,
+				imageUri: row.image_uri
+			}));
+		});
+	},
 };
 
 

@@ -4,5 +4,6 @@ create table if not exists project (
 	target double precision not null,
 	subtitle text,
 	description text,
-	imageUri text
+	image_uri text,
+	creation_date timestamp not null default now()
 );

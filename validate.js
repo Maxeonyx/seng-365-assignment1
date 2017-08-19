@@ -27,6 +27,10 @@ const sc = {
 			amount: joi.number().positive().precision(4).required(),
 			description: joi.string().required()
 		}).unique("id"),
+	},
+	pagination: {
+		startIndex: joi.number().integer().min(0),
+		count: joi.number().integer().min(1)
 	}
 };
 
@@ -61,5 +65,6 @@ module.exports.schema = {
 		subtitle: sc.project.subtitle,
 		description: sc.project.description,
 		imageUri: sc.project.imageUri
-	}
+	},
+	getProject: sc.pagination,
 };
