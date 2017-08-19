@@ -3,7 +3,7 @@ services:
   app:
     build: .
     links:
-      mysql:mysql
+      - mysql:mysql
   mysql:
     image: "mysql:5.7"
     environment:
