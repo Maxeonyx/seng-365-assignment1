@@ -10,6 +10,8 @@ stages:
 clean:
   stage: clean
   script:
+  - docker port mgc70_app_1
+  - docker port mgc70_mysql_1
   - docker network prune -f
 
 build:
