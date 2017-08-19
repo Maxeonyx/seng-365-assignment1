@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 
 app.use('/', require('./routes/base.js'));
 app.use('/users', require('./routes/users.js'));
+app.use('/projects', require('./routes/projects.js'));
 
 db.initialise().then(() => {
 	
