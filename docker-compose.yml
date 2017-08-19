@@ -2,6 +2,8 @@ version: "2"
 services:
   app:
     build: .
+    links:
+      mysql:mysql
   mysql:
     image: "mysql:5.7"
     environment:
