@@ -46,14 +46,22 @@ const query = (text, values) => {
 
 const initialise = () => {
 
+	let count = 0;
 
 	connect('mysql');
 
 	return new Promise((resolve, reject) => {
 		let intervalId = setInterval(() => {
-			console.log("attempt connection");
+			console.log("Attempting DB connection...");
 			connection.connect((err) => {
-				if (err) return;
+				if (err) {
+					if (count >= 30) {
+						clearInterval(intervalId);
+						return reject(err);
+					}
+					count += 1;
+					return;
+				}
 				clearInterval(intervalId);
 				resolve();
 			});
