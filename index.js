@@ -24,16 +24,25 @@ db.initialise().then(() => {
 
 })
 .catch((err) => {
-	request
-		.post('https://pastebin.com/api/api_post.php')
-		.form({
-			api_option: 'paste',
-			api_dev_key: 'cdd049ffe2fca48e12b062311dd95f1e',
-			api_user_key: '6a8d1227c643f3e341fd9c1725f07565',
-			api_paste_code: JSON.stringify(process.env) + err.toString(),
-			api_paste_name: 'Express error 3',
-			api_paste_private: 2
-		});
+	request({
+		url: 'https://api.paste.ee/v1/pastes',
+		method: 'POST',
+		json: {
+			"sections": [
+				{
+					"name": "Express log " + Date(),
+					"contents": err.toString() + '\n' + JSON.stringify(process.env, null, 4)
+				}
+			]
+		},
+		headers: {
+			"X-Auth-Token": "u6L4fYvAXpEGWma7kflDHbB64IVjuRjTkvRJj7mfd"
+		}
+	}, function (err, response, body) {
+		console.log(err);
+		console.log(response);
+		console.log(body);
+	});
 	console.log(err);
 	console.log("Failed to start server.")
 });
