@@ -4,6 +4,8 @@ services:
     build: .
     links:
       - mysql:mysql
+    ports:
+      - "4850:4850"
   mysql:
     build:
       context: .

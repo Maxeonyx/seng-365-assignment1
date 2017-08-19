@@ -13,7 +13,8 @@ const connect = (database) => {
 			host: process.env.SENG365_MYSQL_HOST || "mysql",
 			user: "root",
 			password: "secret",
-			database: database
+			database: database,
+			debug: true
 		});
 		resolve();
 	});
