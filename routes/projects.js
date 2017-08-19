@@ -1,5 +1,10 @@
 const router = require('express').Router();
 const validate = require('../validate.js');
+const multer = require('multer');
+
+const storage = multer.memoryStorage();
+const upload = multer({storage: storage});
+
 const db = require('../db.js');
 const auth = require('./auth.js');
 
@@ -105,6 +110,46 @@ router.get('/:id/rewards', (req, res, next) => {
 	db.queries.getRewards(projectId)
 	.then((rewards) => {
 		res.status(201).send(rewards);
+	}).catch((err) => {
+		console.log(err);
+		res.status(500).send("Internal Server Error");
+	});
+});
+
+router.post('/:id/image', auth, upload.single('image'), (req, res, next) => {
+
+	let projectId = req.params.id;
+
+	if (validate(validate.schema.id, projectId).error) {
+		return res.status(400).send("Invalid project id");
+	}
+	projectId = parseInt(projectId);
+
+	console.log(req);
+
+	db.queries.createImage(projectId, req.file)
+	.then((imageId) => {
+		res.status(201).send("OK");
+	}).catch((err) => {
+		console.log(err);
+		res.status(500).send("Internal Server Error");
+	});
+
+});
+
+router.get('/:id/image', (req, res, next) => {
+
+	let projectId = req.params.id;
+
+	if (validate(validate.schema.id, projectId).error) {
+		return res.status(400).send("Invalid project id");
+	}
+	projectId = parseInt(projectId);
+
+	db.queries.getImage(projectId)
+	.then((file) => {
+		if (file === null) return res.status(404).send("Not found");
+		res.set('Content-Type', file.mimetype).status(201).end(file.buffer, 'binary');
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send("Internal Server Error");

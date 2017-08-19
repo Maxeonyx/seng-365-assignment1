@@ -55,6 +55,7 @@ const initialise = () => {
 		.then(() => queryFile('tables/creator.sql'))
 		.then(() => queryFile('tables/backer.sql'))
 		.then(() => queryFile('tables/reward.sql'))
+		.then(() => queryFile('tables/image.sql'))
 		.then(() => console.log("DB Initialised!"));
 
 };
@@ -438,8 +439,50 @@ const queries = {
 			}));
 		});
 	},
+	createImage (projectId, file) {
+		return query(
+			`INSERT INTO image (
+				project_id,
+				data,
+				mimetype
+			) VALUES ?
+			ON DUPLICATE KEY UPDATE
+				data = ?,
+				mimetype = ?`,
+			[[[
+				projectId,
+				file.buffer,
+				file.mimetype
+			]], file.buffer, file.mimetype]
+		).then((result) => {
+			if (result.rows.affectedRows === 1) {
+				return true;
+			} else {
+				return null;
+			}
+		});
+	},
+	getImage (projectId) {
+		return query(
+			`SELECT 
+				data,
+				mimetype
+			FROM image
+			WHERE project_id = ?`,
+			[projectId]
+		).then((result) => {
+				console.log(result);
+			if (result.rows.length === 1) {
+				return {
+					buffer: result.rows[0].data,
+					mimetype: result.rows[0].mimetype
+				};
+			} else {
+				return null;
+			}
+		});
+	}
 };
-
 
 module.exports = {
 	connect: connect,
