@@ -9,8 +9,8 @@ let connection = null;
 const connect = (database) => {
 	return new Promise((resolve, reject) => {
 		connection = mysql.createConnection({
-			port: process.env.SENG365_MYSQL_PORT || 6033,
-			host: process.env.SENG365_MYSQL_HOST || "localhost",
+			port: process.env.SENG365_MYSQL_PORT || 3306,
+			host: process.env.SENG365_MYSQL_HOST || "mysql",
 			user: "root",
 			password: "secret",
 			database: database
