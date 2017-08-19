@@ -117,6 +117,29 @@ router.get('/:id/rewards', (req, res, next) => {
 	});
 });
 
+router.put('/:id/rewards', (req, res, next) => {
+
+	let projectId = req.params.id;
+	if (validate(validate.schema.id, projectId).error) {
+		return res.status(400).send("Invalid project id");
+	}
+	projectId = parseInt(projectId);
+
+	const data = req.body;
+
+	if (validate(validate.schema.updateRewards, data).error) {
+		return res.status(400).send("Malformed details, check all fields are valid");
+	}
+
+	db.queries.updateRewards(projectId, data)
+	.then((dbResult) => {
+		res.status(200).send("OK");
+	}).catch((err) => {
+		console.log(err);
+		res.status(500).send("Internal Server Error");
+	});
+});
+
 router.post('/:id/image', auth, upload.single('image'), (req, res, next) => {
 
 	let projectId = req.params.id;
@@ -151,29 +174,6 @@ router.get('/:id/image', (req, res, next) => {
 	.then((file) => {
 		if (file === null) return res.status(404).send("Not found");
 		res.set('Content-Type', file.mimetype).status(201).end(file.buffer, 'binary');
-	}).catch((err) => {
-		console.log(err);
-		res.status(500).send("Internal Server Error");
-	});
-});
-
-router.put('/:id/rewards', (req, res, next) => {
-
-	let projectId = req.params.id;
-	if (validate(validate.schema.id, projectId).error) {
-		return res.status(400).send("Invalid project id");
-	}
-	projectId = parseInt(projectId);
-
-	const data = req.body;
-
-	if (validate(validate.schema.updateRewards, data).error) {
-		return res.status(400).send("Malformed details, check all fields are valid");
-	}
-
-	db.queries.updateRewards(projectId, data)
-	.then((dbResult) => {
-		res.status(200).send("OK");
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send("Internal Server Error");
