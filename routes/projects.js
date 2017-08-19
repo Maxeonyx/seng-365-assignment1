@@ -43,7 +43,7 @@ router.get('/', (req, res, next) => {
 
 	db.queries.getProjects(startIndex, count)
 	.then((projects) => {
-		res.status(201).send(projects);
+		res.status(200).send(projects);
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send("Internal Server Error");
@@ -62,7 +62,8 @@ router.get('/:id', (req, res, next) => {
 
 	db.queries.getProject(projectId)
 	.then((project) => {
-		res.status(201).send(project);
+		if (project === null) return res.status(404).send("Not found");
+		res.status(200).send(project);
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send("Internal Server Error");
@@ -109,7 +110,7 @@ router.get('/:id/rewards', (req, res, next) => {
 
 	db.queries.getRewards(projectId)
 	.then((rewards) => {
-		res.status(201).send(rewards);
+		res.status(200).send(rewards);
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send("Internal Server Error");
