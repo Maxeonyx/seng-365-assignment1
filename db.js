@@ -46,7 +46,19 @@ const query = (text, values) => {
 
 const initialise = () => {
 
-	return connect('mysql')
+
+	connect('mysql');
+
+	return new Promise((resolve, reject) => {
+		let intervalId = setInterval(() => {
+			console.log("attempt connection");
+			connection.connect((err) => {
+				if (err) return;
+				clearInterval(intervalId);
+				resolve();
+			});
+		}, 1000);
+		})
 		.then(() => queryFile('database.sql'))
 		.then(() => connect('mgc70'))
 		.then(() => queryFile('tables/user.sql'))
