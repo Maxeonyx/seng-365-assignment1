@@ -140,7 +140,7 @@ router.put('/:id/rewards', (req, res, next) => {
 	});
 });
 
-router.post('/:id/image', auth, upload.single('image'), (req, res, next) => {
+router.put('/:id/image', auth, upload.single('image'), (req, res, next) => {
 
 	let projectId = req.params.id;
 
