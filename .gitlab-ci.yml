@@ -11,6 +11,8 @@ clean:
   stage: clean
   script:
   - docker ps
+  - docker logs mgc70_app_1
+  - docker logs mgc70_mysql_1
   - docker network prune -f
 
 build:
@@ -22,6 +24,4 @@ deploy:
   stage: deploy
   script:
   - docker-compose down --remove-orphans
-  - docker-compose up
-  - docker port mgc70_app_1
-  - docker port mgc70_mysql_1
+  - docker-compose up -d
