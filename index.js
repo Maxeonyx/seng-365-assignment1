@@ -10,9 +10,13 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/', require('./routes/base.js'));
-app.use('/users', require('./routes/users.js'));
-app.use('/projects', require('./routes/projects.js'));
+const api = express.Router()
+	.use('/', require('./routes/base.js'))
+	.use('/users', require('./routes/users.js'))
+	.use('/projects', require('./routes/projects.js'));
+
+app.use("/api/v1", api);
+	
 
 db.initialise().then(() => {
 
