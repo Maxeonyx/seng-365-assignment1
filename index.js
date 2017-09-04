@@ -16,7 +16,7 @@ app.use('/projects', require('./routes/projects.js'));
 
 db.initialise().then(() => {
 
-	app.set('port', process.env.SENG365_PORT || 4850);
+	app.set('port', 4941);
 
 	app.listen(app.get('port'), () => {
 		console.log("Listening on port: " + app.get('port'));

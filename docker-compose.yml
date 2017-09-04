@@ -5,7 +5,10 @@ services:
     links:
       - mysql:mysql
     ports:
-      - 4850:4850
+      - 4850:4941
+    environment:
+     SENG365_MYSQL_HOST: mysql
+     SENG365_MYSQL_PORT: 3306
   mysql:
     image: mysql:5.7
     environment:
