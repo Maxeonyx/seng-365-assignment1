@@ -6,13 +6,12 @@ stages:
   - clean
   - build
   - deploy
+  - log
 
 clean:
   stage: clean
   script:
   - docker ps
-  - docker logs mgc70_app_1
-  - docker logs mgc70_mysql_1
   - docker network prune -f
 
 build:
@@ -25,3 +24,9 @@ deploy:
   script:
   - docker-compose down --remove-orphans
   - docker-compose up -d
+
+log:
+  stage: log
+  script:
+  - docker logs mgc70_app_1
+  - docker logs mgc70_mysql_1
